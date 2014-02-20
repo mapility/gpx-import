@@ -54,7 +54,7 @@ class ContaoMapGPXImport extends Backend
 
 	public function importGpx(DataContainer $dc)
 	{
-		if ($this->Input->get('key') != 'importgpx')
+		if (\Input::get('key') != 'importgpx')
 		{
 			return '';
 		}
@@ -90,11 +90,11 @@ class ContaoMapGPXImport extends Backend
 			if ($this->Input->post('removeData'))
 			{
 				$this->Database->prepare('DELETE FROM tl_contaomap_marker WHERE pid=?')
-								->execute($this->Input->get('id'));
+								->execute(\Input::get('id'));
 				$this->Database->prepare('DELETE FROM tl_contaomap_polygon WHERE pid=?')
-								->execute($this->Input->get('id'));
+								->execute(\Input::get('id'));
 				$this->Database->prepare('DELETE FROM tl_contaomap_polyline WHERE pid=?')
-								->execute($this->Input->get('id'));
+								->execute(\Input::get('id'));
 			}
 			// now cycle through all xml entities and add them properly.
 
@@ -113,7 +113,7 @@ class ContaoMapGPXImport extends Backend
 				}
 				$arrExtends = ContaoMap::calcExtends($arrPoints);
 				$arrData = array(
-					'pid' => $this->Input->get('id'),
+					'pid' => \Input::get('id'),
 					'tstamp' => time(),
 					'name' => $name,
 					'min_latitude' => $arrExtends[0][0],
@@ -147,7 +147,7 @@ class ContaoMapGPXImport extends Backend
 					}
 					$arrExtends = ContaoMap::calcExtends($arrPoints);
 					$arrData = array(
-						'pid' => $this->Input->get('id'),
+						'pid' => \Input::get('id'),
 						'tstamp' => time(),
 						'name' => sprintf('%s %0'.$max2.'d', $name, ++$j),
 						'min_latitude' => $arrExtends[0][0],
@@ -172,7 +172,7 @@ class ContaoMapGPXImport extends Backend
 				$name = ($objPoint->name[0])?((string)$objPoint->name[0]):sprintf('GPX Trackpoint %s %0'.$max.'d', $this->Input->post('source'), ++$i);
 				$arrCoord = array($objPoint->attributes()->lat, $objPoint->attributes()->lon);
 				$arrData = array(
-					'pid' => $this->Input->get('id'),
+					'pid' => \Input::get('id'),
 					'tstamp' => time(),
 					'name' => $name,
 					'coords' => implode($arrCoord, ','),
