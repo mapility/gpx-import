@@ -89,11 +89,11 @@ class ContaoMapGPXImport extends Backend
 			libxml_use_internal_errors($useError);
 			if ($this->Input->post('removeData'))
 			{
-				$this->Database->prepare('DELETE FROM tl_contaomap_marker WHERE pid=?')
+				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_marker WHERE pid=?')
 								->execute(\Input::get('id'));
-				$this->Database->prepare('DELETE FROM tl_contaomap_polygon WHERE pid=?')
+				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_polygon WHERE pid=?')
 								->execute(\Input::get('id'));
-				$this->Database->prepare('DELETE FROM tl_contaomap_polyline WHERE pid=?')
+				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_polyline WHERE pid=?')
 								->execute(\Input::get('id'));
 			}
 			// now cycle through all xml entities and add them properly.
@@ -125,7 +125,7 @@ class ContaoMapGPXImport extends Backend
 					'strokeweight' => '3',
 					'strokeopacity' => '100',
 				);
-				$this->Database->prepare('INSERT INTO tl_contaomap_polyline %s')->set($arrData)->execute();
+				\Database::getInstance()->prepare('INSERT INTO tl_contaomap_polyline %s')->set($arrData)->execute();
 				$_SESSION['TL_CONFIRM'][] = sprintf($GLOBALS['TL_LANG']['MSC']['importGPXRoute'], $name);
 			}
 
@@ -159,7 +159,7 @@ class ContaoMapGPXImport extends Backend
 						'strokeweight' => '3',
 						'strokeopacity' => '100',
 					);
-					$this->Database->prepare('INSERT INTO tl_contaomap_polyline %s')->set($arrData)->execute();
+					\Database::getInstance()->prepare('INSERT INTO tl_contaomap_polyline %s')->set($arrData)->execute();
 				}
 				$_SESSION['TL_CONFIRM'][] = sprintf($GLOBALS['TL_LANG']['MSC']['importGPXTracks'], $name, $j);
 			}
@@ -185,7 +185,7 @@ class ContaoMapGPXImport extends Backend
 					'info_anchor' => '',
 					'info_auto' => '',
 				);
-				$this->Database->prepare('INSERT INTO tl_contaomap_marker %s')->set($arrData)->execute();
+				\Database::getInstance()->prepare('INSERT INTO tl_contaomap_marker %s')->set($arrData)->execute();
 				$_SESSION['TL_CONFIRM'][] = sprintf($GLOBALS['TL_LANG']['MSC']['importGPXPoints'], $name);
 
 /*
