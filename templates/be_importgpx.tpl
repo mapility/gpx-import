@@ -5,10 +5,10 @@
 
 <form action="<?php echo ampersand($this->Environment->request, ENCODE_AMPERSANDS); ?>" id="tl_csv_import" class="tl_form" method="post">
 <div class="tl_formbody_edit">
-<input type="hidden" name="do" value="<?php echo \Input::get('do'); ?>" />
-<input type="hidden" name="table" value="<?php echo \Input::get('table'); ?>" />
-<input type="hidden" name="key" value="<?php echo \Input::get('key'); ?>" />
-<input type="hidden" name="id" value="<?php echo \Input::get('id'); ?>" />
+<input type="hidden" name="do" value="<?php echo \Input::getInstance()->get('do'); ?>" />
+<input type="hidden" name="table" value="<?php echo \Input::getInstance()->get('table'); ?>" />
+<input type="hidden" name="key" value="<?php echo \Input::getInstance()->get('key'); ?>" />
+<input type="hidden" name="id" value="<?php echo \Input::getInstance()->get('id'); ?>" />
 <input type="hidden" name="token" value="<?php echo $strToken; ?>" />
 
 <div class="tl_tbox">

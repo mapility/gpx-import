@@ -54,7 +54,7 @@ class ContaoMapGPXImport extends Backend
 
 	public function importGpx(DataContainer $dc)
 	{
-		if (\Input::get('key') != 'importgpx')
+		if (\Input::getInstance()->get('key') != 'importgpx')
 		{
 			return '';
 		}
@@ -62,12 +62,12 @@ class ContaoMapGPXImport extends Backend
 		$objTemplate = new BackendTemplate('be_importgpx');
 		$objTemplate->objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_catalog_items']['fields']['source'], 'source', null, 'source', 'tl_contaomap_layer'));
 
-		if($this->Input->post('key')=='importgpx')
+		if(\Input::getInstance()->post('key')=='importgpx')
 		{
 			$_SESSION['TL_CONFIRM'] = null;
 			$_SESSION['TL_ERROR'] = null;
 			// check that we have a GPX file.
-			$objFile = new File($this->Input->post('source'));
+			$objFile = new File(\Input::getInstance()->post('source'));
 			if ($objFile->extension != 'gpx')
 			{
 				$this->Session->set('tl_gpx_import', null);
@@ -76,7 +76,7 @@ class ContaoMapGPXImport extends Backend
 			}
 			// open file
 			$useError = libxml_use_internal_errors(false);
-			if (!($gpxFile = simplexml_load_file(TL_ROOT .'/'. $this->Input->post('source')))) 
+			if (!($gpxFile = simplexml_load_file(TL_ROOT .'/'. \Input::getInstance()->post('source'))))
 			{
 				$this->Session->set('tl_gpx_import', null);
 				$_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['noGPXData'];
@@ -87,14 +87,14 @@ class ContaoMapGPXImport extends Backend
 				$this->redirect($referer);
 			}
 			libxml_use_internal_errors($useError);
-			if ($this->Input->post('removeData'))
+			if (\Input::getInstance()->post('removeData'))
 			{
 				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_marker WHERE pid=?')
-								->execute(\Input::get('id'));
+								->execute(\Input::getInstance()->get('id'));
 				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_polygon WHERE pid=?')
-								->execute(\Input::get('id'));
+								->execute(\Input::getInstance()->get('id'));
 				\Database::getInstance()->prepare('DELETE FROM tl_contaomap_polyline WHERE pid=?')
-								->execute(\Input::get('id'));
+								->execute(\Input::getInstance()->get('id'));
 			}
 			// now cycle through all xml entities and add them properly.
 
@@ -105,7 +105,7 @@ class ContaoMapGPXImport extends Backend
 			$max=strlen((string)$this->getChildCount($gpxFile, 'rte'));
 			foreach($gpxFile->rte as $objRte)
 			{
-				$name = ($objRte->name[0])?((string)$objRte->name[0]):sprintf('GPX Route %s %0'.$max.'d', $this->Input->post('source'), ++$i);
+				$name = ($objRte->name[0])?((string)$objRte->name[0]):sprintf('GPX Route %s %0'.$max.'d', \Input::getInstance()->post('source'), ++$i);
 				$arrPoints=array();
 				foreach($objRte->rtept as $objPoint)
 				{
@@ -113,7 +113,7 @@ class ContaoMapGPXImport extends Backend
 				}
 				$arrExtends = ContaoMap::calcExtends($arrPoints);
 				$arrData = array(
-					'pid' => \Input::get('id'),
+					'pid' => \Input::getInstance()->get('id'),
 					'tstamp' => time(),
 					'name' => $name,
 					'min_latitude' => $arrExtends[0][0],
@@ -137,7 +137,7 @@ class ContaoMapGPXImport extends Backend
 				$j=0;
 				$i++;
 				$max2=strlen((string)$this->getChildCount($objTrk, 'trkseg'));
-				$name = ($objTrk->name[0])?((string)$objTrk->name[0]):sprintf('GPX Track %s %0'.$max.'d', $this->Input->post('source'), $i);
+				$name = ($objTrk->name[0])?((string)$objTrk->name[0]):sprintf('GPX Track %s %0'.$max.'d', \Input::getInstance()->post('source'), $i);
 				foreach($objTrk->trkseg as $objTrkSeg)
 				{
 					$arrPoints=array();
@@ -147,7 +147,7 @@ class ContaoMapGPXImport extends Backend
 					}
 					$arrExtends = ContaoMap::calcExtends($arrPoints);
 					$arrData = array(
-						'pid' => \Input::get('id'),
+						'pid' => \Input::getInstance()->get('id'),
 						'tstamp' => time(),
 						'name' => sprintf('%s %0'.$max2.'d', $name, ++$j),
 						'min_latitude' => $arrExtends[0][0],
@@ -169,10 +169,10 @@ class ContaoMapGPXImport extends Backend
 			$max=strlen((string)$this->getChildCount($gpxFile, 'wpt'));
 			foreach($gpxFile->wpt as $objPoint)
 			{
-				$name = ($objPoint->name[0])?((string)$objPoint->name[0]):sprintf('GPX Trackpoint %s %0'.$max.'d', $this->Input->post('source'), ++$i);
+				$name = ($objPoint->name[0])?((string)$objPoint->name[0]):sprintf('GPX Trackpoint %s %0'.$max.'d', \Input::getInstance()->post('source'), ++$i);
 				$arrCoord = array($objPoint->attributes()->lat, $objPoint->attributes()->lon);
 				$arrData = array(
-					'pid' => \Input::get('id'),
+					'pid' => \Input::getInstance()->get('id'),
 					'tstamp' => time(),
 					'name' => $name,
 					'coords' => implode($arrCoord, ','),
