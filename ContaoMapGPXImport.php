@@ -62,21 +62,21 @@ class ContaoMapGPXImport extends Backend
 		$objTemplate = new BackendTemplate('be_importgpx');
 		$objTemplate->objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_catalog_items']['fields']['source'], 'source', null, 'source', 'tl_contaomap_layer'));
 
-        $referrer = $this->getReferer();
+		$referer = $this->getReferer();
 
 		if(\Input::getInstance()->post('key')=='importgpx')
 		{
 			$_SESSION['TL_CONFIRM'] = null;
 			$_SESSION['TL_ERROR'] = null;
 			// check that we have a GPX file.
-            $strFile = \FilesModel::findById(\Input::getInstance()->post('source'))->path;
+			$strFile = \FilesModel::findById(\Input::getInstance()->post('source'))->path;
 			$objFile = new File($strFile);
 
 			if ($objFile->extension != 'gpx')
 			{
 				$this->Session->set('tl_gpx_import', null);
 				$_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension);
-				$this->redirect($referrer);
+				$this->redirect($referer);
 			}
 			// open file
 			$useError = libxml_use_internal_errors(false);
@@ -88,7 +88,7 @@ class ContaoMapGPXImport extends Backend
 				{
 					$_SESSION['TL_ERROR'][] = $error;
 				}
-				$this->redirect($referrer);
+				$this->redirect($referer);
 			}
 			libxml_use_internal_errors($useError);
 			if (\Input::getInstance()->post('removeData'))
