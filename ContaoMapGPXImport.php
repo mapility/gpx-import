@@ -62,21 +62,25 @@ class ContaoMapGPXImport extends Backend
 		$objTemplate = new BackendTemplate('be_importgpx');
 		$objTemplate->objTree = new FileTree($this->prepareForWidget($GLOBALS['TL_DCA']['tl_catalog_items']['fields']['source'], 'source', null, 'source', 'tl_contaomap_layer'));
 
+        $referrer = $this->getReferer();
+
 		if(\Input::getInstance()->post('key')=='importgpx')
 		{
 			$_SESSION['TL_CONFIRM'] = null;
 			$_SESSION['TL_ERROR'] = null;
 			// check that we have a GPX file.
-			$objFile = new File(\Input::getInstance()->post('source'));
+            $strFile = \FilesModel::findById(\Input::getInstance()->post('source'))->path;
+			$objFile = new File($strFile);
+
 			if ($objFile->extension != 'gpx')
 			{
 				$this->Session->set('tl_gpx_import', null);
 				$_SESSION['TL_ERROR'][] = sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension);
-				$this->redirect($referer);
+				$this->redirect($referrer);
 			}
 			// open file
 			$useError = libxml_use_internal_errors(false);
-			if (!($gpxFile = simplexml_load_file(TL_ROOT .'/'. \Input::getInstance()->post('source'))))
+			if (!($gpxFile = simplexml_load_file(TL_ROOT .'/'. $strFile)))
 			{
 				$this->Session->set('tl_gpx_import', null);
 				$_SESSION['TL_ERROR'][] = $GLOBALS['TL_LANG']['ERR']['noGPXData'];
@@ -84,7 +88,7 @@ class ContaoMapGPXImport extends Backend
 				{
 					$_SESSION['TL_ERROR'][] = $error;
 				}
-				$this->redirect($referer);
+				$this->redirect($referrer);
 			}
 			libxml_use_internal_errors($useError);
 			if (\Input::getInstance()->post('removeData'))
@@ -105,7 +109,7 @@ class ContaoMapGPXImport extends Backend
 			$max=strlen((string)$this->getChildCount($gpxFile, 'rte'));
 			foreach($gpxFile->rte as $objRte)
 			{
-				$name = ($objRte->name[0])?((string)$objRte->name[0]):sprintf('GPX Route %s %0'.$max.'d', \Input::getInstance()->post('source'), ++$i);
+				$name = ($objRte->name[0])?((string)$objRte->name[0]):sprintf('GPX Route %s %0'.$max.'d', $strFile, ++$i);
 				$arrPoints=array();
 				foreach($objRte->rtept as $objPoint)
 				{
@@ -137,7 +141,7 @@ class ContaoMapGPXImport extends Backend
 				$j=0;
 				$i++;
 				$max2=strlen((string)$this->getChildCount($objTrk, 'trkseg'));
-				$name = ($objTrk->name[0])?((string)$objTrk->name[0]):sprintf('GPX Track %s %0'.$max.'d', \Input::getInstance()->post('source'), $i);
+				$name = ($objTrk->name[0])?((string)$objTrk->name[0]):sprintf('GPX Track %s %0'.$max.'d', $strFile, $i);
 				foreach($objTrk->trkseg as $objTrkSeg)
 				{
 					$arrPoints=array();
